@@ -35,62 +35,65 @@ List *MakeList() {
 
 void Display(List *list) {
   Node *current = list->head;
-  printf('[');
+  printf("[");
   for(; current->next != NULL; current=current->next) 
-    printf("%d ", current->data);
-  printf(']');
+    printf("%d, ", current->data);
+  printf("%d]\n", current->data);
 }
 
 void DisplayBackward(List *list) {
   Node *current = list->head;
   for(; current->next != NULL; current=current->next) {};
-  printf('[');
-    for(; current->prev != NULL; current=current->prev);
-      printf("%d ", current->data);
-  printf(']');
+  printf("[");
+    for(; current->prev != NULL; current=current->prev) 
+      printf("%d, ", current->data);
+  printf("%d]\n", current->data);  
 }
 
-//Insert data at the end
+//Insert data at the top
 void Insert(int data, List *list) {
   Node *newNode = CreateNode();
   newNode->data = data;
 
-  if(list->head == NULL) {
+  if(list->head == NULL) 
     list->head = newNode;
-  } else {
-    Node *current = list->head;
-    while(current->next != NULL) 
-      current = current->next;
-    current->next = newNode;
-    newNode->prev = current;
+  else {
+    newNode->next = list->head;
+    list->head->prev = newNode;
+    list->head = newNode;
   }
 }
 
+//Can algorithm be more effective?
 void InsertAfter(int item, int data, List *list) {
   if(list->head == NULL) return;
   
   Node *newNode = CreateNode();
-  newNode = data;
+  newNode->data = data;
 
   Node *current = list->head;
-  while(current->data != item && current != NULL) 
+  while(current->data != item && current->next != NULL) 
     current = current->next;
-
-  if(current->next == NULL) 
-    current->next = newNode;
-  else {
-    Node *prev = current; 
-    current = current->next;
-
-    prev->next = newNode;
-    newNode->prev = prev;
-    
-    newNode->next = current;
-    current->prev = newNode;
+  
+  if(current->next == NULL && current->data != item)  
+    return;
+  
+  if(current->next == NULL && current->data == item) {
+      current->next = newNode;
+      return;
   }
+
+  Node *prev = current; 
+  current = current->next;
+
+  prev->next = newNode;
+  newNode->prev = prev;
+      
+  newNode->next = current;
+  current->prev = newNode;
 }
 
-void InsertAtHead(int data, List *list) {
+void InsertLast(int data, List *list) {
   Node *newNode = CreateNode();
   newNode->data = data;
 
