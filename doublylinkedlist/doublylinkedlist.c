@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include "doublylinkedlist.h"
 
-struct node {
+struct Node {
   int data;
   Node *next; 
   Node *prev;
 };
 
-struct list {
+struct List {
   Node *head;  
 };
 
@@ -100,8 +100,10 @@ void InsertLast(int data, List *list) {
   if(list->head == NULL) {
     list->head = newNode;
   } else {
-    newNode->next = list->head->prev;
-    list->head = newNode;
+    Node *current = list->head;
+    while(current->next != NULL)
+      current = current->next;
+    current->next = newNode;
   }
 }
 
@@ -123,9 +125,16 @@ void Delete(int item, List *list) {
   while(current->data != item && current->next != NULL)
     current = current->next;
 
+  printf("%d", current->data);
+
   if(current->next == NULL) {
     current->prev->next = NULL;
     free(current);
+  } else if(list->head == current) {
+    current = current->next;
+    current->prev = NULL;
+    free(list->head);
+    list->head = current;
   } else {
     current->next->prev = current->prev;
     current->prev->next = current->next;
