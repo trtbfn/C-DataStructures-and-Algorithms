@@ -3,23 +3,30 @@
 #include "doublylinkedlist.h"
 
 int main(void) {
-    List *list = MakeList();
-    for(int i = 0; i < 6; i++) 
-        Insert(i, list);
-    Display(list);
-
-    InsertAfter(5, 10, list);
-    InsertAfter(60, 5, list);
-    Display(list);
-
-    InsertLast(23, list);
-    Display(list);
-
-    Delete(4, list);
-    Display(list);
-    Delete(5, list);
-    Display(list);
-    Delete(23, list);
-    Display(list);
+    IntDLL *dll = intDLL_create_list();
+    for(int i = 5; i > 0; i--) 
+        intDLL_insert(
+            intDLL_create_node(i),
+            dll
+        );
+    intDLL_display(dll);
+    intDLL_insert_after(
+        intDLL_create_node(5),
+        intDLL_create_node(3),
+        dll
+    );
+    intDLL_display(dll);
+    intDLL_insert_before(
+        intDLL_create_node(10),
+        intDLL_create_node(2),
+        dll
+    );
+    intDLL_display(dll);
+    intDLL_insert_before(
+        intDLL_create_node(10),
+        intDLL_create_node(2),
+        dll
+    );
+    intDLL_display(dll);
     return 0;
 }

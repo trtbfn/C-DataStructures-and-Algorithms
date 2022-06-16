@@ -2,168 +2,212 @@
 #include <stdlib.h>
 #include "doublylinkedlist.h"
 
-struct Node {
+struct IntDLLNode {
   int data;
-  Node *next; 
-  Node *prev;
+  IntDLLNode *next; 
+  IntDLLNode *prev;
 };
 
-struct List {
-  Node *head;  
+//Doubly Linked List
+struct IntDLL {
+  IntDLLNode *head;  
 };
 
-Node *CreateNode();
-
-Node *CreateNode() {
-    Node *newNode = malloc(sizeof(Node));
-    if(!newNode) 
+IntDLLNode *intDLL_create_node(int data) {
+    IntDLLNode *node = malloc(sizeof(data));
+    if(!node)
         return NULL;
-    newNode->next = NULL;
-    newNode->prev = NULL;
+    node -> data = data;
+    node -> next = NULL;
+    node -> prev = NULL;
 
-    return newNode;
+    return node;
 }
 
-List *MakeList() {
-    List *list = malloc(sizeof(List));
+IntDLL *intDLL_create_list(void) {
+    IntDLL *list = malloc(sizeof(IntDLL));
     if(!list)
         return NULL;
-    list->head = NULL;
+    list -> head = NULL;
 
     return list;
 }
 
-void Display(List *list) {
-  Node *current = list->head;
-  printf("[");
-  for(; current->next != NULL; current=current->next) 
-    printf("%d, ", current->data);
-  printf("%d]\n", current->data);
-}
-
-void DisplayBackward(List *list) {
-  Node *current = list->head;
-  for(; current->next != NULL; current=current->next) {};
-  printf("[");
-    for(; current->prev != NULL; current=current->prev) 
-      printf("%d, ", current->data);
-  printf("%d]\n", current->data);  
-}
-
-//Insert data at the top
-void Insert(int data, List *list) {
-  Node *newNode = CreateNode();
-  newNode->data = data;
-
-  if(list->head == NULL) 
-    list->head = newNode;
-  else {
-    newNode->next = list->head;
-    list->head->prev = newNode;
-    list->head = newNode;
-  }
-}
-
-//Can algorithm be more effective?
-void InsertAfter(int item, int data, List *list) {
-  if(list->head == NULL) return;
-  
-  Node *newNode = CreateNode();
-  newNode->data = data;
-
-  Node *current = list->head;
-  while(current->data != item && current->next != NULL) 
-    current = current->next;
-  
-  if(current->next == NULL && current->data != item)  
+void intDLL_display(IntDLL *list) {
+  if(list -> head == NULL) {
+    printf("[ ]");
     return;
+  }
+
+  if(list -> head -> next == NULL) {
+    printf("[ %d ]", list -> head -> data);
+    return;
+  }
+
+  IntDLLNode *current = list -> head;
+  printf("[");
+
+  for(; current -> next != NULL; 
+        current = current -> next) 
+    printf("%d, ", current -> data);
+
+  printf("%d]\n", current -> data);
+}
+
+void intDLL_insert(IntDLLNode *new, IntDLL *list) {
+  if(list -> head == NULL) 
+    list -> head = new;
+  else {
+    new -> next = list -> head;
+    list -> head->prev = new;
+    list -> head = new;
+  }
+}
+
+void intDLL_insert_after(IntDLLNode *target,
+    IntDLLNode *new, IntDLL *list) {
+
+  if(list -> head == NULL) return;
+
+  if(list -> head -> next == NULL
+      && list -> head -> data == target -> data) {
+
+    list -> head -> next = new;
+    new -> prev = list -> head;
+
+    return;
+  }
   
-  if(current->next == NULL && current->data == item) {
-      current->next = newNode;
-      return;
-  }
+  IntDLLNode *current = list -> head;
+  while(current -> data != target -> data
+     && current -> next != NULL) 
+      current = current -> next;
 
-  Node *prev = current; 
-  current = current->next;
+  if(current -> data == target -> data) {
+    if(current -> next != NULL) {
+    IntDLLNode *next = current -> next;
 
-  prev->next = newNode;
-  newNode->prev = prev;
-      
-  newNode->next = current;
-  current->prev = newNode;
-}
-
-void InsertLast(int data, List *list) {
-  Node *newNode = CreateNode();
-  newNode->data = data;
-
-  if(list->head == NULL) {
-    list->head = newNode;
-  } else {
-    Node *current = list->head;
-    while(current->next != NULL)
-      current = current->next;
-    current->next = newNode;
+    current -> next = new;
+    new->prev = current;
+        
+    new->next = next;
+    next->prev = new;
+    } else 
+      current -> next = new;
   }
 }
 
-void _CheckOccupancy(List *list);
+void intDLL_insert_before(IntDLLNode *target,
+    IntDLLNode *new, IntDLL *list) {
 
-// Block for delete functions 
-void _CheckOccupancy(List *list) {
-  if(list->head == NULL) return;
-  if(list->head->next == NULL) {
-    free(list->head);
-    list->head = NULL;
+  if(list -> head == NULL) return;
+
+  if(list -> head -> next == NULL
+      && list -> head -> data == target -> data) {
+
+    new -> next = list -> head;
+    list -> head -> prev = new;
+    list -> head = new;
+
+    return;
+  }
+
+  if(list -> head -> data == target -> data) {
+
+    new -> next = list -> head;
+    list -> head -> prev = new;
+    list -> head = new;
+
+    return;
+  }
+  
+  IntDLLNode *current = list -> head;
+  while(current -> data != target -> data
+     && current -> next != NULL) 
+      current = current -> next;
+
+  if(current -> data == target -> data) {
+    IntDLLNode *prev = current -> prev;
+  
+    prev -> next = new;
+    new -> prev = prev;
+        
+    new -> next = current;
+    current->prev = new;
   }
 }
 
-void Delete(int item, List *list) {
-  _CheckOccupancy(list);
+// void InsertLast(int data, List *list) {
+//   Node *newNode = CreateNode();
+//   newNode->data = data;
 
-  Node *current = list->head;
-  while(current->data != item && current->next != NULL)
-    current = current->next;
+//   if(list->head == NULL) {
+//     list->head = newNode;
+//   } else {
+//     Node *current = list->head;
+//     while(current->next != NULL)
+//       current = current->next;
+//     current->next = newNode;
+//   }
+// }
 
-  printf("%d", current->data);
+// void _CheckOccupancy(List *list);
 
-  if(current->next == NULL) {
-    current->prev->next = NULL;
-    free(current);
-  } else if(list->head == current) {
-    current = current->next;
-    current->prev = NULL;
-    free(list->head);
-    list->head = current;
-  } else {
-    current->next->prev = current->prev;
-    current->prev->next = current->next;
-    free(current);
-  }
-}
+// // Block for delete functions 
+// void _CheckOccupancy(List *list) {
+//   if(list->head == NULL) return;
+//   if(list->head->next == NULL) {
+//     free(list->head);
+//     list->head = NULL;
+//   }
+// }
 
-void DeleteLast(List *list) {
-  _CheckOccupancy(list);
+// void Delete(int item, List *list) {
+//   _CheckOccupancy(list);
 
-  Node *current = list->head;
-  while(current != NULL) 
-    current->next = current;
+//   Node *current = list->head;
+//   while(current->data != item && current->next != NULL)
+//     current = current->next;
 
-  current->prev->next = NULL;
-  free(current);
-}
+//   printf("%d", current->data);
 
-void Destroy(List *list) {
-  _CheckOccupancy(list);
+//   if(current->next == NULL) {
+//     current->prev->next = NULL;
+//     free(current);
+//   } else if(list->head == current) {
+//     current = current->next;
+//     current->prev = NULL;
+//     free(list->head);
+//     list->head = current;
+//   } else {
+//     current->next->prev = current->prev;
+//     current->prev->next = current->next;
+//     free(current);
+//   }
+// }
 
-  Node *current = list->head;
-  while(current != NULL) {
-    current->next = current;
-    free(current->prev);
-  }
-  free(current);
-  list->head = NULL;
-}
+// void DeleteLast(List *list) {
+//   _CheckOccupancy(list);
+
+//   Node *current = list->head;
+//   while(current != NULL) 
+//     current->next = current;
+
+//   current->prev->next = NULL;
+//   free(current);
+// }
+
+// void Destroy(List *list) {
+//   _CheckOccupancy(list);
+
+//   Node *current = list->head;
+//   while(current != NULL) {
+//     current->next = current;
+//     free(current->prev);
+//   }
+//   free(current);
+//   list->head = NULL;
+// }
 
 
 
