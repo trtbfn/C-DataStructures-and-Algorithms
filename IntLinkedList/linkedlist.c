@@ -7,7 +7,7 @@ struct IntLLNode {
     struct IntLLNode *next;
 };
 
-struct IntLinkedList {
+struct IntLL {
     IntLLNode *head;
 };
 
@@ -21,8 +21,8 @@ IntLLNode *intLL_create_node(int data) {
     return node;
 }
 
-IntLinkedList *intLL_make_list(void) {
-    IntLinkedList *list = malloc(sizeof(IntLinkedList));
+IntLL *intLL_make_list(void) {
+    IntLL *list = malloc(sizeof(IntLL));
     if(!list) {
         return NULL;
     }
@@ -30,7 +30,7 @@ IntLinkedList *intLL_make_list(void) {
     return list;
 }
 
-void intLL_insert(IntLLNode *new, IntLinkedList *list) {
+void intLL_insert(IntLLNode *new, IntLL *list) {
     if(list -> head == NULL) {
         list -> head = new;
         return;
@@ -39,7 +39,7 @@ void intLL_insert(IntLLNode *new, IntLinkedList *list) {
     list -> head = new;
 }
 
-void intLL_insert_last(IntLLNode *new, IntLinkedList *list) {
+void intLL_insert_last(IntLLNode *new, IntLL *list) {
     if(list -> head == NULL) {
         list -> head = new;
         return;
@@ -51,7 +51,7 @@ void intLL_insert_last(IntLLNode *new, IntLinkedList *list) {
 }
     
 void intLL_insert_after(IntLLNode *target, 
-    IntLLNode *new, IntLinkedList *list) {
+    IntLLNode *new, IntLL *list) {
 
     if(list -> head == NULL) return;
 
@@ -79,7 +79,7 @@ void intLL_insert_after(IntLLNode *target,
 }
 
 void intLL_insert_before(IntLLNode *target, 
-    IntLLNode *new, IntLinkedList *list) {
+    IntLLNode *new, IntLL *list) {
 
     if(list -> head == NULL) return;
 
@@ -112,7 +112,7 @@ void intLL_insert_before(IntLLNode *target,
     new -> next = current;
 }
 
-void intLL_display(IntLinkedList *list) {
+void intLL_display(IntLL *list) {
     if(list -> head == NULL) {
         printf("[ ]\n");
         return;
@@ -132,11 +132,11 @@ void intLL_display(IntLinkedList *list) {
     printf("%d ]\n", current->data);
 }
 
-unsigned char intLL_is_empty(IntLinkedList *list) {
+unsigned char intLL_is_empty(IntLL *list) {
     return list -> head == NULL? 1: 0;
 }
 
-void intLL_delete(IntLLNode *target, IntLinkedList *list) {
+void intLL_delete(IntLLNode *target, IntLL *list) {
     if(list->head == NULL) return;
 
     IntLLNode *current = list->head;
@@ -170,7 +170,7 @@ void intLL_delete(IntLLNode *target, IntLinkedList *list) {
     }
 }
 
-void intLL_delete_first(IntLinkedList *list) {
+void intLL_delete_first(IntLL *list) {
     if(list -> head == NULL) return;
     if(list -> head -> next == NULL) {
         free(list -> head);
@@ -183,7 +183,7 @@ void intLL_delete_first(IntLinkedList *list) {
     list -> head = next;
 }
 
-void intLL_delete_last(IntLinkedList *list) {
+void intLL_delete_last(IntLL *list) {
     if(list -> head == NULL) return;
     if(list -> head -> next == NULL) {
         free(list -> head);
@@ -198,3 +198,25 @@ void intLL_delete_last(IntLinkedList *list) {
     current->next = NULL;
 }
 
+
+void intDLL_destroy(IntLL *list) {
+
+  if(list -> head == NULL) return;
+
+  if(list -> head -> next == NULL) {
+    free(list -> head);
+    list -> head = NULL;
+    return;
+  }
+
+  IntLLNode *current = list -> head;
+  IntLLNode *prev = NULL;
+
+  while(current -> next != NULL) {
+    prev = current;
+    current = current -> next;
+    free(prev);
+  }
+  free(current);
+  list->head = NULL;
+}

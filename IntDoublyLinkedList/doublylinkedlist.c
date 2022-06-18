@@ -35,12 +35,12 @@ IntDLL *intDLL_create_list(void) {
 
 void intDLL_display(IntDLL *list) {
   if(list -> head == NULL) {
-    printf("[ ]");
+    printf("[ ]\n");
     return;
   }
 
   if(list -> head -> next == NULL) {
-    printf("[ %d ]", list -> head -> data);
+    printf("[ %d ]\n", list -> head -> data);
     return;
   }
 
@@ -137,77 +137,120 @@ void intDLL_insert_before(IntDLLNode *target,
   }
 }
 
-// void InsertLast(int data, List *list) {
-//   Node *newNode = CreateNode();
-//   newNode->data = data;
+void intDLL_insert_first(IntDLLNode *new, IntDLL *list) {
 
-//   if(list->head == NULL) {
-//     list->head = newNode;
-//   } else {
-//     Node *current = list->head;
-//     while(current->next != NULL)
-//       current = current->next;
-//     current->next = newNode;
-//   }
-// }
+  if(list -> head == NULL) {
+    list -> head = new;
+    return;
+  } 
 
-// void _CheckOccupancy(List *list);
+  new -> next = list -> head;
+  list -> head -> prev = new;
+  list -> head = new;
+}
 
-// // Block for delete functions 
-// void _CheckOccupancy(List *list) {
-//   if(list->head == NULL) return;
-//   if(list->head->next == NULL) {
-//     free(list->head);
-//     list->head = NULL;
-//   }
-// }
+void intDLL_insert_last(IntDLLNode *new, IntDLL *list) {
 
-// void Delete(int item, List *list) {
-//   _CheckOccupancy(list);
+  if(list -> head == NULL) {
+    list -> head = new;
+    return;
+  } 
 
-//   Node *current = list->head;
-//   while(current->data != item && current->next != NULL)
-//     current = current->next;
+  IntDLLNode *current = list -> head;
+    while(current -> next != NULL)
+      current = current -> next;
+    current -> next = new;
+    new -> prev = current;
+}
 
-//   printf("%d", current->data);
+void intDLL_delete(IntDLLNode *target, IntDLL *list) {
 
-//   if(current->next == NULL) {
-//     current->prev->next = NULL;
-//     free(current);
-//   } else if(list->head == current) {
-//     current = current->next;
-//     current->prev = NULL;
-//     free(list->head);
-//     list->head = current;
-//   } else {
-//     current->next->prev = current->prev;
-//     current->prev->next = current->next;
-//     free(current);
-//   }
-// }
+  if(list -> head == NULL) return;
 
-// void DeleteLast(List *list) {
-//   _CheckOccupancy(list);
+  if(list -> head -> next == NULL
+    && list -> head -> data 
+      == target -> data) {
 
-//   Node *current = list->head;
-//   while(current != NULL) 
-//     current->next = current;
+    free(list -> head);
+    list -> head = NULL;
+    return;
+  }
 
-//   current->prev->next = NULL;
-//   free(current);
-// }
+  if(list -> head -> data 
+      == target -> data) {
 
-// void Destroy(List *list) {
-//   _CheckOccupancy(list);
+    IntDLLNode *next = list -> head -> next;
+    next -> prev = NULL;
+    free(list -> head);
+    list -> head = next;
+    return;
+  }
+  
+  IntDLLNode *current = list -> head;
+  while(current -> next != NULL 
+        && current -> data != target -> data)
+          current = current -> next;
 
-//   Node *current = list->head;
-//   while(current != NULL) {
-//     current->next = current;
-//     free(current->prev);
-//   }
-//   free(current);
-//   list->head = NULL;
-// }
+  if(current -> data != target -> data) 
+    return;
+
+  if(current -> next != NULL) {
+    current -> next -> prev = current -> prev;
+    current -> prev -> next = current -> next;
+  } else 
+    current -> prev -> next = NULL;
+  free(current);
+}
+
+void intDLL_delete_first(IntDLL *list) {
+  if(list -> head == NULL) return;
+
+  if(list -> head ->next == NULL) {
+    free(list -> head);
+    list -> head = NULL;
+    return;
+  }
+
+  IntDLLNode *next = list -> head -> next;
+  next -> prev = NULL;
+  free(list -> head);
+  list -> head = next;
+}
+
+void intDLL_delete_last(IntDLL *list) {
+  if(list -> head == NULL) return;
+
+  if(list -> head -> next == NULL) {
+    free(list -> head);
+    list -> head = NULL;
+    return;
+  }
+
+  IntDLLNode *current = list -> head;
+  while(current -> next != NULL)
+    current = current -> next;
+  current -> prev -> next = NULL;
+  free(current);
+}
+
+void intDLL_destroy(IntDLL *list) {
+
+  if(list -> head == NULL) return;
+
+  if(list -> head ->next == NULL) {
+    free(list -> head);
+    list -> head = NULL;
+    return;
+  }
+
+  IntDLLNode *current = list->head;
+  while(current -> next != NULL) {
+    current = current -> next;
+    free(current->prev);
+  }
+  free(current);
+  list->head = NULL;
+}
 
 
 
