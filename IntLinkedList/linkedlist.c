@@ -199,7 +199,7 @@ void intLL_delete_last(IntLL *list) {
 }
 
 
-void intDLL_destroy(IntLL *list) {
+void intLL_destroy(IntLL *list) {
 
   if(list -> head == NULL) return;
 
